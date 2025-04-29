@@ -15,6 +15,11 @@ type Philosopher struct {
 	leftFork  int
 }
 
+type RestaurantLog struct {
+	Items []string
+	Mut   *sync.Mutex
+}
+
 var philosophers = []Philosopher{
 	{name: "Plato", leftFork: 4, rightFork: 0},
 	{name: "Socrates", leftFork: 0, rightFork: 1},
@@ -52,15 +57,23 @@ func dine() {
 		forks[i] = &sync.Mutex{}
 	}
 
+	log := RestaurantLog{
+		Items: make([]string, 0, len(philosophers)),
+		Mut:   &sync.Mutex{},
+	}
 	// start the meal
 	for _, v := range philosophers {
-		go diningProblem(v, wg, forks, seatedWg)
+		go diningProblem(v, wg, forks, seatedWg, &log)
 	}
 
 	wg.Wait()
+	color.Cyan("Customer log:")
+	for _, v := range log.Items {
+		fmt.Printf("\t- %s\n", v)
+	}
 }
 
-func diningProblem(p Philosopher, wg *sync.WaitGroup, forks map[int]*sync.Mutex, seatedWg *sync.WaitGroup) {
+func diningProblem(p Philosopher, wg *sync.WaitGroup, forks map[int]*sync.Mutex, seatedWg *sync.WaitGroup, log *RestaurantLog) {
 	defer wg.Done()
 
 	// seat the philosopher
@@ -96,4 +109,7 @@ func diningProblem(p Philosopher, wg *sync.WaitGroup, forks map[int]*sync.Mutex,
 
 	fmt.Println(p.name, "is satisfied")
 	fmt.Println(p.name, "left the table")
+	log.Mut.Lock()
+	log.Items = append(log.Items, p.name)
+	log.Mut.Unlock()
 }
