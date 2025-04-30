@@ -13,6 +13,19 @@ func Chapter02() {
 
 	go server1(chan1)
 	go server2(chan2)
+
+	for {
+		select {
+		case s1 := <-chan1:
+			fmt.Println("Case one:", s1)
+		case s2 := <-chan1:
+			fmt.Println("Case two:", s2)
+		case s3 := <-chan2:
+			fmt.Println("Case three:", s3)
+		case s4 := <-chan2:
+			fmt.Println("Case four:", s4)
+		}
+	}
 }
 
 func server1(ch chan string) {

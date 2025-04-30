@@ -1,5 +1,5 @@
 package main
 
 func main() {
-	Chapter02()
+	SleepingBarber()
 }
