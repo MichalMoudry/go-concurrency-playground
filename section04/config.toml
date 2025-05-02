@@ -1,0 +1,3 @@
+port = 80
+db_conn_str = "host=localhost port=5432 user=root password=root dbname=default-db sslmode=disable"
+redis = "host:6379"
